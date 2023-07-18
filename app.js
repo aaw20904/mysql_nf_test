@@ -44,7 +44,7 @@ async function test(){
   try{
     //await dbLayer.initSecondNFTable();  OK
     await dbLayer.initThridNFDatabase();
-  }catch(e){
+  } catch(e) {
     console.log(e);
   }
   await dbLayer.closeConnectionPool();
