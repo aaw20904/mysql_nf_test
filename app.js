@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 let dbl = require("./db");
+let rndGen = require("./randomGenerator");
 let dbLayer= new dbl.MyDb({database:"mydb",password:"65535258", user:"root", host:"localhost"});
 
 var indexRouter = require('./routes/index');
@@ -42,7 +43,9 @@ app.use(function(err, req, res, next) {
 
 async function test(){
   try{
-    await dbLayer.initSecondNFTable();  
+
+    await rndGen.makeRandomFileWithInt32();
+    //await dbLayer.initSecondNFTable();  ok
     //await dbLayer.initThridNFDatabase(); OK
    //await dbLayer.insertRowIntoStudents1({st_id:1, name:"Bob", surname:"Nixon", city:"Detroyt",faculty:"Economy",group:2}); OK
    // await dbLayer.insertIntoStudents2({st_id:1, name:"Vera", surname:"Gray"}); OK
@@ -54,9 +57,11 @@ async function test(){
   } catch(e) {
     console.log(e);
   }
-  await dbLayer.closeConnectionPool();
+ /// await dbLayer.closeConnectionPool(); ok
 
 }
+
+
 
 test();
 
