@@ -3,6 +3,8 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+let dbl = require("./db");
+let dbLayer= new dbl.MyDb({database:"mydb",password:"65535258", user:"root", host:"localhost"});
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -38,4 +40,16 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+async function test(){
+  try{
+    await dbLayer.initSecondNFTable();
+  }catch(e){
+    console.log(e);
+  }
+  await dbLayer.closeConnectionPool();
+
+}
+
+test();
+
+//app.listen(3000, ()=>console.log("listen on 3000..."))

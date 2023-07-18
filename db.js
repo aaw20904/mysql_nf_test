@@ -11,7 +11,19 @@ class MyDb{
                 connectionLimit: 10,
             })
     }
-
+    
+    async closeConnectionPool(){
+       return new Promise((resolve, reject) => {
+                this.#pool.end((err)=>{
+                if(err){
+                    reject(err);
+                }else {
+                    resolve();
+                }
+            })
+        });
+        
+    }
     ///create a simple  table in second NF 
     async initSecondNFTable(){
         let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`students1` ("+
