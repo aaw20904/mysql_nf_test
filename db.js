@@ -46,7 +46,7 @@ class MyDb{
         await this._createStudents2();
         await this._createCities2();
         await this._createFaculties2()
-        await this._createStudentCity2();
+        //await this._createStudentCity2();
         await this._createStudentFaculty2();
         await this._createGroups2();
         await this._createStudentGroup2();
