@@ -42,8 +42,15 @@ app.use(function(err, req, res, next) {
 
 async function test(){
   try{
-    //await dbLayer.initSecondNFTable();  OK
-    await dbLayer.initThridNFDatabase();
+    await dbLayer.initSecondNFTable();  
+    //await dbLayer.initThridNFDatabase(); OK
+   //await dbLayer.insertRowIntoStudents1({st_id:1, name:"Bob", surname:"Nixon", city:"Detroyt",faculty:"Economy",group:2}); OK
+   // await dbLayer.insertIntoStudents2({st_id:1, name:"Vera", surname:"Gray"}); OK
+   //await dbLayer.insertIntoCities2({city_id:10,city:"Chikago"}); OK
+   //await dbLayer.insertIntoStudentCity2({st_id:1,city_id:10}); OK
+  /// await dbLayer.insertIntoFaculties2({fac_id:5,faculty:"Ecology"}); OK
+  ///await dbLayer.insertIntoGroups2({fac_id:5, gr_id:501}); OK
+  // await dbLayer.insertIntoStudentGroup2({st_id:1,gr_id:501}); OK
   } catch(e) {
     console.log(e);
   }
