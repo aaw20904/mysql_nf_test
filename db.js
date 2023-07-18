@@ -30,6 +30,16 @@ class MyDb{
             }
     } 
 
+    async initThridNFTable(){
+        await this._createStudents2();
+        await this._createCities2();
+        await this._createFaculties2()
+        await this._createStudentCity2();
+        await this._createStudentFaculty2();
+        await this._createGroups2();
+        await this._createStudentGroup2();
+    }
+
     ///insert 
 
     // insert row info a simple table in 2nd NF
@@ -66,8 +76,8 @@ class MyDb{
 
    //3)student_faculty
 
-   async _createStudentFaculty() {
-    let makeTableCommand = "CREATE TABLE `mydb`.`faculties2` ("+
+   async _createFaculties() {
+    let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`faculties2` ("+
         "`fac_id` INT NOT NULL,"+
         "`faculty` VARCHAR(32) NULL,"+
         "PRIMARY KEY (`fac_id`));"
@@ -77,43 +87,84 @@ class MyDb{
              
    }
 
-///
-async _makeStudentCity() {
-   let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`student_city2` ("+
-  "`st_id` INT NOT NULL,"+
-  "`city_id` INT NULL,"+
-  "PRIMARY KEY (`st_id`),"+
- " INDEX `student_city2_city_id_idx` (`city_id` ASC) VISIBLE,"+
-  "CONSTRAINT `student_city2_st_id`"+
-    "FOREIGN KEY (`st_id`)"+
-    "REFERENCES `mydb`.`students2` (`st_id`)"+
+    ///
+    async _createStudentCity() {
+    let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`student_city2` ("+
+    "`st_id` INT NOT NULL,"+
+    "`city_id` INT NULL,"+
+    "PRIMARY KEY (`st_id`),"+
+    " INDEX `student_city2_city_id_idx` (`city_id` ASC) VISIBLE,"+
+    "CONSTRAINT `student_city2_st_id`"+
+        "FOREIGN KEY (`st_id`)"+
+        "REFERENCES `mydb`.`students2` (`st_id`)"+
+        "ON DELETE NO ACTION"+
+        "ON UPDATE NO ACTION,"+
+    "CONSTRAINT `student_city2_city_id`"+
+    " FOREIGN KEY (`city_id`)"+
+    " REFERENCES `mydb`.`cities2` (`city_id`)"+
     "ON DELETE NO ACTION"+
-    "ON UPDATE NO ACTION,"+
-  "CONSTRAINT `student_city2_city_id`"+
-   " FOREIGN KEY (`city_id`)"+
-   " REFERENCES `mydb`.`cities2` (`city_id`)"+
-   "ON DELETE NO ACTION"+
-   " ON UPDATE NO ACTION);"
- 
-                let result = await this.#pool.promise().query(makeTableCommand);
-                return result;
-}
+    " ON UPDATE NO ACTION);"
+    
+                    let result = await this.#pool.promise().query(makeTableCommand);
+                    return result;
+    }
 
-async _createGroups2() {
-    let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`groups2` ("+
-  "`gr_id` INT NOT NULL,"+
-  "`fac_id` INT NOT NULL,"+
-  "PRIMARY KEY (`gr_id`),"+
-  "INDEX `groups2_fac_id_idx` (`fac_id` ASC) VISIBLE,"+
-  "CONSTRAINT `groups2_fac_id`"+
-    "FOREIGN KEY (`fac_id`)"+
-    "REFERENCES `mydb`.`faculties2` (`fac_id`)"+
-    "ON DELETE NO ACTION"+
-    "ON UPDATE NO ACTION);"
+    async _createGroups2() {
+        let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`groups2` ("+
+    "`gr_id` INT NOT NULL,"+
+    "`fac_id` INT NOT NULL,"+
+    "PRIMARY KEY (`gr_id`),"+
+    "INDEX `groups2_fac_id_idx` (`fac_id` ASC) VISIBLE,"+
+    "CONSTRAINT `groups2_fac_id`"+
+        "FOREIGN KEY (`fac_id`)"+
+        "REFERENCES `mydb`.`faculties2` (`fac_id`)"+
+        "ON DELETE NO ACTION"+
+        "ON UPDATE NO ACTION);"
 
-    let result = await this.#pool.promise().query(makeTableCommand);
-                return result;
-}
+        let result = await this.#pool.promise().query(makeTableCommand);
+                    return result;
+    }
+
+    async _createStudentGroup2(){
+        let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`student_group2` ("+
+    "`st_id` INT NOT NULL,"+
+    "`gr_id` INT NOT NULL,"+
+    "PRIMARY KEY (`st_id`),"+
+    "INDEX `student_group2_1gr_id_idx` (`gr_id` ASC) VISIBLE,"+
+    "CONSTRAINT `student_group2_st_id`"+
+        "FOREIGN KEY (`st_id`)"+
+        "REFERENCES `mydb`.`students2` (`st_id`)"+
+        "ON DELETE NO ACTION"+
+    " ON UPDATE NO ACTION,"+
+    "CONSTRAINT `student_group2_1gr_id`"+
+        "FOREIGN KEY (`gr_id`)"+
+        "REFERENCES `mydb`.`groups2` (`gr_id`)"+
+        "ON DELETE NO ACTION"+
+        "ON UPDATE NO ACTION);"
+
+        let result = await this.#pool.promise().query(makeTableCommand);
+                    return result;
+    }
+
+    async _createStudentFaculty2(){
+        let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`student_faculty2` ("+
+            "`st_id` INT NOT NULL,"+
+            "`fac_id` INT NOT NULL,"+
+            "PRIMARY KEY (`st_id`),"+
+            "INDEX `student_faculty2_fac_id_idx` (`fac_id` ASC) VISIBLE,"+
+            "CONSTRAINT `student_faculty2_st_id`"+
+            " FOREIGN KEY (`st_id`)"+
+            " REFERENCES `mydb`.`students2` (`st_id`)"+
+            " ON DELETE NO ACTION"+
+            " ON UPDATE NO ACTION,"+
+            "CONSTRAINT `student_faculty2_fac_id`"+
+            "  FOREIGN KEY (`fac_id`)"+
+            "  REFERENCES `mydb`.`faculties2` (`fac_id`)"+
+            " ON DELETE NO ACTION"+
+            " ON UPDATE NO ACTION);"
+            let result = await this.#pool.promise().query(makeTableCommand);
+                    return result;
+    }
 
 
 
