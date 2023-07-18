@@ -167,6 +167,58 @@ class MyDb{
     }
 
 
+ async insertIntoStudents2(arg={st_id:1, name:"", surname:""}) {
+    let result = await this.#pool.promise().query(`INSERT INTO students2 (st_id, name, surname) VALUES (?,?,?)`,
+                    [arg.st_id, arg.name, arg.surname]);
+
+    return result;
+ }
+
+  async insertIntoStudentCity2(arg={st_id:1, city_id:2}) {
+    let result = await this.#pool.promise().query(`INSERT INTO student_city2 (st_id,city_id) VALUES (?,?)`,
+                    [arg.st_id, arg.city_id]);
+
+    return result;
+ }
+
+   async insertIntoCities2(arg={city_id:1, city:""}) {
+    let result = await this.#pool.promise().query(`INSERT INTO cities2 (city_id, city) VALUES (?,?)`,
+                    [arg.city_id, arg.city]);
+
+        return result;
+    }
+
+    async inertIntoStudentFaculty2 (arg={st_id:1, fac_id:2}) {
+        let result = await this.#pool.promise().query(`INSERT INTO student_faculty2 (st_id, fac_id) VALUES (?,?)`,
+                    [arg.st_id, arg.fac_id]);
+
+        return result;
+    }
+
+    
+    async insertIntoFaculties2 (arg={fac_id:1, faculty:2}) {
+        let result = await this.#pool.promise().query(`INSERT INTO faculty2 ( fac_id, faculty) VALUES (?,?)`,
+                    [arg.fac_id, arg.faculty]);
+
+        return result;
+    }
+
+     async insertIntoGroups2 (arg={fac_id:1, gr_id:2}) {
+        let result = await this.#pool.promise().query(`INSERT INTO groups2 ( fac_id, gr_id) VALUES (?,?)`,
+                    [arg.fac_id, arg.gr_id]);
+
+        return result;
+    }
+
+       async insertIntoStudentGroup2 (arg={st_id:1, gr_id:2}) {
+        let result = await this.#pool.promise().query(`INSERT INTO student_group2 ( st_id, gr_id) VALUES (?,?)`,
+                    [arg.st_id, arg.gr_id]);
+
+        return result;
+    }
+
 
 
 }
+
+module.exports={MyDb};
