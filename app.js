@@ -42,7 +42,8 @@ app.use(function(err, req, res, next) {
 
 async function test(){
   try{
-    await dbLayer.initSecondNFTable();
+    //await dbLayer.initSecondNFTable();  OK
+    await dbLayer.initThridNFDatabase();
   }catch(e){
     console.log(e);
   }

@@ -42,7 +42,7 @@ class MyDb{
             }
     } 
 
-    async initThridNFTable(){
+    async initThridNFDatabase(){
         await this._createStudents2();
         await this._createCities2();
         await this._createFaculties2()
@@ -63,7 +63,7 @@ class MyDb{
 
     // 1)students2
     async _createStudents2(){
-        let makeTableCommand = "CREATE TABLE IF NOT EXISTS`mydb`.`students2` ("
+        let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`students2` ("+
             "`st_id` INT NOT NULL,"+
             "`name` VARCHAR(32) NULL,"+
             "`surname` VARCHAR(32) NULL,"+
@@ -88,7 +88,7 @@ class MyDb{
 
    //3)student_faculty
 
-   async _createFaculties() {
+   async _createFaculties2() {
     let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`faculties2` ("+
         "`fac_id` INT NOT NULL,"+
         "`faculty` VARCHAR(32) NULL,"+
@@ -100,20 +100,20 @@ class MyDb{
    }
 
     ///
-    async _createStudentCity() {
+    async _createStudentCity2() {
     let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`student_city2` ("+
     "`st_id` INT NOT NULL,"+
     "`city_id` INT NULL,"+
     "PRIMARY KEY (`st_id`),"+
     " INDEX `student_city2_city_id_idx` (`city_id` ASC) VISIBLE,"+
-    "CONSTRAINT `student_city2_st_id`"+
-        "FOREIGN KEY (`st_id`)"+
-        "REFERENCES `mydb`.`students2` (`st_id`)"+
+    "CONSTRAINT `student_city2_st_id` "+
+        "FOREIGN KEY (`st_id`) "+
+        "REFERENCES `mydb`.`students2` (`st_id`) "+
         "ON DELETE NO ACTION"+
         "ON UPDATE NO ACTION,"+
-    "CONSTRAINT `student_city2_city_id`"+
-    " FOREIGN KEY (`city_id`)"+
-    " REFERENCES `mydb`.`cities2` (`city_id`)"+
+    "CONSTRAINT `student_city2_city_id` "+
+    " FOREIGN KEY (`city_id`) "+
+    " REFERENCES `mydb`.`cities2` (`city_id`) "+
     "ON DELETE NO ACTION"+
     " ON UPDATE NO ACTION);"
     
