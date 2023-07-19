@@ -84,21 +84,30 @@ list.names=[
 ]
 
 list.surnames=[
-          "Aardema", "Aarestad", "Aarhus", "Aaron", "Aarons", 
-          "Aaronson", "Aarsvold", "Aas", "Aasby", "Aase", 
-          "Aasen", "Aavang", "Abad", "Abadi", "Abadie", 
-          "Abair", "Abaja", "Abajian", "Abalos", "Abaloz", 
-          "Abar", "Abarca", "Abare", "Abascal", "Abasta",
-          "Abate", "Abati", "Abatiell", "Abato", "Abatti",
-          "Abaunza", "Abaya", "Abbadessa", "Abbamonte", "Abbas", 
-          "Abbasi", "Abbassi", "Abbate", "Abbatiello", "Abbay", 
-          "Abbe", "Abbed", "Abbenante", "Abbey","Bedker", 
-          "Bedlion", "Bednar", "Bednarczyk", "Bednarek", "Bednarik",
-          "Bednarowicz", "Bednarski", "Bednarz", "Bedner", "Bedney",
-          "Bednorz", "Bedocs", "Bedoka", "Bedolla", "Bedonie",
-          "Bedor", "Bedore", "Bedoya", "Bedre", "Bedrosian", 
-          "Bedsaul", "Bedsole", "Bedson", "Bedward", "Bedwell", 
-          "Bee", "Beebe", "Beebee", "Beebout", "Beech",
-          "Beecham", "Beecher", "Beeching", "Beechler", "Beechner",
-                 
-]
+                "Aardema", "Aarestad", "Aarhus", "Aaron", "Aarons", 
+                "Aaronson", "Aarsvold", "Aas", "Aasby", "Aase", 
+                "Aasen", "Aavang", "Abad", "Abadi", "Abadie", 
+                "Abair", "Abaja", "Abajian", "Abalos", "Abaloz", 
+                "Abar", "Abarca", "Abare", "Abascal", "Abasta",
+                "Abate", "Abati", "Abatiell", "Abato", "Abatti",
+                "Abaunza", "Abaya", "Abbadessa", "Abbamonte", "Abbas", 
+                "Abbasi", "Abbassi", "Abbate", "Abbatiello", "Abbay", 
+                "Abbe", "Abbed", "Abbenante", "Abbey","Bedker", 
+                "Bedlion", "Bednar", "Bednarczyk", "Bednarek", "Bednarik",
+                "Bednarowicz", "Bednarski", "Bednarz", "Bedner", "Bedney",
+                "Bednorz", "Bedocs", "Bedoka", "Bedolla", "Bedonie",
+                "Bedor", "Bedore", "Bedoya", "Bedre", "Bedrosian", 
+                "Bedsaul", "Bedsole", "Bedson", "Bedward", "Bedwell", 
+                "Bee", "Beebe", "Beebee", "Beebout", "Beech",
+                "Beecham", "Beecher", "Beeching", "Beechler", "Beechner",
+         ];
+
+list.cities = [  "Altaville", "Alto", "Alton", "Alton Bay", "Altoona", "Covington", "Cowiche", "Cowpens", "Coxsackie", "Cozad","Holly Pond", "Holly Springs", "Hollywood", "Holmdel", ];  //14       
+
+list.allTheFaculties = ["biology","human_science", "architecture_history_art", "linguistics", "earth_sciences_and_geography"]; //5
+
+list.faculties.biology = ["Biochemistry","Centre for Family Research","Genetics","Plant Sciences","Zoology"]; //5
+list.faculties.human_science = ["Archaeology","Social Anthropology","Politics and International Studies","Biological Anthropology","Sociology"];//5
+list.faculties.architecture_history_art = ["Architecture","History of Art","Building stylistics","Brick buildings","wood buildings"];//5
+list.faculties.linguistics = ["French","German","Italian","Portugeese","English"];//5
+list.faculties.earth_sciences_and_geography = ["Earth Sciences","Geography","Woods","Montains"];//5

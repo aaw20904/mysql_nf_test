@@ -44,9 +44,10 @@ app.use(function(err, req, res, next) {
 async function test(){
   try{
 
-    await rndGen.makeRandomFileWithInt32();
-    //await dbLayer.initSecondNFTable();  ok
-    //await dbLayer.initThridNFDatabase(); OK
+   //await rndGen.makeRandomFileWithInt32(); ok
+   //await dbLayer.initSecondNFTable();  ok
+    await dbLayer.initThridNFDatabase();  
+   // await dbLayer.inertIntoGroups2 ({gr_id:501, gr_name:"History of ecology"}); ok
    //await dbLayer.insertRowIntoStudents1({st_id:1, name:"Bob", surname:"Nixon", city:"Detroyt",faculty:"Economy",group:2}); OK
    // await dbLayer.insertIntoStudents2({st_id:1, name:"Vera", surname:"Gray"}); OK
    //await dbLayer.insertIntoCities2({city_id:10,city:"Chikago"}); OK
@@ -57,7 +58,7 @@ async function test(){
   } catch(e) {
     console.log(e);
   }
- /// await dbLayer.closeConnectionPool(); ok
+   await dbLayer.closeConnectionPool(); 
 
 }
 

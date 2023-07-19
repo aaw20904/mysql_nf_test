@@ -31,7 +31,7 @@ class MyDb{
             "`sname` VARCHAR(32) NULL,"+
             " `surname` VARCHAR(32) NULL,"+
             "`city` VARCHAR(32) NULL,"+
-            "`faculty` VARCHAR(32) NULL,"+
+            "`faculty` VARCHAR(64) NULL,"+
             "`sgroup` INT NULL,"+
             " PRIMARY KEY (`st_id`));"
             try {
@@ -47,7 +47,7 @@ class MyDb{
         await this._createCities2();
         await this._createFaculties2()
         await this._createStudentCity2();
-        await this._createStudentFaculty2();
+        await this._createGroupsFac2();
         await this._createGroups2();
         await this._createStudentGroup2();
     }
@@ -91,7 +91,7 @@ class MyDb{
    async _createFaculties2() {
     let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`faculties2` ("+
         "`fac_id` INT NOT NULL,"+
-        "`faculty` VARCHAR(32) NULL,"+
+        "`faculty` VARCHAR(64) NULL,"+
         "PRIMARY KEY (`fac_id`));"
           
                 let result = await this.#pool.promise().query(makeTableCommand);
@@ -121,8 +121,8 @@ class MyDb{
                     return result;
     }
 
-    async _createGroups2() {
-        let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`groups2` ("+
+    async _createGroupsFac2() {
+        let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`groups_fac2` ("+
     "`gr_id` INT NOT NULL, "+
     " `fac_id` INT NOT NULL, "+
     " PRIMARY KEY (`gr_id`), "+
@@ -138,42 +138,42 @@ class MyDb{
     }
 
     async _createStudentGroup2(){
-        let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`student_group2` ("+
-    "`st_id` INT NOT NULL ,"+
-    "`gr_id` INT NOT NULL ,"+
-    " PRIMARY KEY (`st_id`), "+
-    " INDEX `student_group2_1gr_id_idx` (`gr_id` ASC), "+
-    " CONSTRAINT `student_group2_st_id` "+
-        " FOREIGN KEY (`st_id`) "+
-        " REFERENCES `mydb`.`students2` (`st_id`) "+
-        " ON DELETE NO ACTION "+
-    " ON UPDATE NO ACTION, "+
-    " CONSTRAINT `student_group2_1gr_id` "+
-        " FOREIGN KEY (`gr_id`) "+
-        " REFERENCES `mydb`.`groups2` (`gr_id`) "+
-        " ON DELETE NO ACTION "+
-        "ON UPDATE NO ACTION);"
+        let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`student_group2` (" +
+        "`st_id` INT NOT NULL, " +
+        "`gr_id` INT NOT NULL, " +
+        "`fac_id` INT NOT NULL, " +
+        "PRIMARY KEY (`st_id`), " +
+        "INDEX `st_gr_fac_id_idx` (`fac_id` ASC), " +
+        "CONSTRAINT `st_gr_fac_id` " +
+        "FOREIGN KEY (`fac_id`) " +
+        "REFERENCES `mydb`.`groups_fac2` (`fac_id`) " +
+        "ON DELETE NO ACTION " +
+        "ON UPDATE NO ACTION, " +
+        "INDEX `student_group2_1gr_id_idx` (`gr_id` ASC), " +
+        "CONSTRAINT `student_group2_st_id` " +
+        "FOREIGN KEY (`st_id`) " +
+        "REFERENCES `mydb`.`students2` (`st_id`) " +
+        "ON DELETE NO ACTION " +
+        "ON UPDATE NO ACTION, " +
+        "CONSTRAINT `student_group2_1gr_id` " +
+        "FOREIGN KEY (`gr_id`) " +
+        "REFERENCES `mydb`.`groups2` (`gr_id`) " +
+        "ON DELETE NO ACTION " +
+        "ON UPDATE NO ACTION);";
 
         let result = await this.#pool.promise().query(makeTableCommand);
                     return result;
     }
 
-    async _createStudentFaculty2(){
-        let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`student_faculty2` ("+
-            "`st_id` INT NOT NULL,"+
-            "`fac_id` INT NOT NULL,"+
-            "PRIMARY KEY (`st_id`),"+
-            "INDEX `student_faculty2_fac_id_idx` (`fac_id` ASC),"+
-            "CONSTRAINT `student_faculty2_st_id`"+
-            " FOREIGN KEY (`st_id`)"+
-            " REFERENCES `mydb`.`students2` (`st_id`)"+
-            " ON DELETE NO ACTION"+
-            " ON UPDATE NO ACTION,"+
-            "CONSTRAINT `student_faculty2_fac_id`"+
-            "  FOREIGN KEY (`fac_id`)"+
-            "  REFERENCES `mydb`.`faculties2` (`fac_id`)"+
-            " ON DELETE NO ACTION"+
-            " ON UPDATE NO ACTION);"
+    async _createGroups2(){
+        let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`groups2` ("+
+            " `gr_id` INT NOT NULL, "+
+            "`gr_name` VARCHAR(64) NULL, "+
+            " PRIMARY KEY (`gr_id`), "+
+            " CONSTRAINT `gr2_gr_id` "+
+             " FOREIGN KEY (`gr_id`) "+
+            "  REFERENCES `mydb`.`groups_fac2` (`gr_id`) "+
+              "ON DELETE NO ACTION ON UPDATE NO ACTION);";
             let result = await this.#pool.promise().query(makeTableCommand);
                     return result;
     }
@@ -200,9 +200,9 @@ class MyDb{
         return result;
     }
 
-    async inertIntoStudentFaculty2 (arg={st_id:1, fac_id:2}) {
-        let result = await this.#pool.promise().query(`INSERT INTO student_faculty2 (st_id, fac_id) VALUES (?,?)`,
-                    [arg.st_id, arg.fac_id]);
+    async inertIntoGroups2 (arg={gr_id:1, gr_name:"**"}) {
+        let result = await this.#pool.promise().query(`INSERT INTO groups2 (gr_id, gr_name) VALUES (?,?)`,
+                    [arg.gr_id, arg.gr_name]);
 
         return result;
     }
@@ -215,8 +215,8 @@ class MyDb{
         return result;
     }
 
-     async insertIntoGroups2 (arg={fac_id:1, gr_id:2}) {
-        let result = await this.#pool.promise().query(`INSERT INTO groups2 ( fac_id, gr_id) VALUES (?,?)`,
+     async insertIntoGroupsFac2 (arg={fac_id:1, gr_id:2}) {
+        let result = await this.#pool.promise().query(`INSERT INTO groups_fac2 ( fac_id, gr_id) VALUES (?,?)`,
                     [arg.fac_id, arg.gr_id]);
 
         return result;
