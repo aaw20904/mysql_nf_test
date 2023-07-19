@@ -61,6 +61,12 @@ async function test(){
 
 }
 
+async function fillSecondNFTableFromFiles () {
+  //init table
+  await dbLayer.initSecondNFTable();
+  
+}
+
 
 
 test();

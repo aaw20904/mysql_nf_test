@@ -1,7 +1,13 @@
 const crypto = require('crypto');
 const fs =require("fs");
+const fsPromises = fs.promises;
 
 let  generatorOfFilesWithRandomData = {};
+
+    generatorOfFilesWithRandomData.readBufferFromFile = async function (filename="") {
+        let outBuffer = await fsPromises.readFile (filename);
+        return outBuffer;
+    }
    
     generatorOfFilesWithRandomData.makeRandomFileWithInt32 = async function(par={fileName:"1.rnd",max:10, amountOfRecords:256 }){
         //32bits
