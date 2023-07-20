@@ -105,9 +105,10 @@ list.surnames=[
 list.cities = [  "Altaville", "Alto", "Alton", "Alton Bay", "Altoona", "Covington", "Cowiche", "Cowpens", "Coxsackie", "Cozad","Holly Pond", "Holly Springs", "Hollywood", "Holmdel", ];  //14       
 
 list.allTheFaculties = ["biology","human_science", "architecture_history_art", "linguistics", "earth_sciences_and_geography"]; //5
-
+list.faculties={};
 list.faculties.biology = ["Biochemistry","Centre for Family Research","Genetics","Plant Sciences","Zoology"]; //5
 list.faculties.human_science = ["Archaeology","Social Anthropology","Politics and International Studies","Biological Anthropology","Sociology"];//5
 list.faculties.architecture_history_art = ["Architecture","History of Art","Building stylistics","Brick buildings","wood buildings"];//5
 list.faculties.linguistics = ["French","German","Italian","Portugeese","English"];//5
 list.faculties.earth_sciences_and_geography = ["Earth Sciences","Geography","Woods","Montains"];//5
+ module.exports = list

@@ -8,6 +8,8 @@ let  generatorOfFilesWithRandomData = {};
         let outBuffer = await fsPromises.readFile (filename);
         return outBuffer;
     }
+
+   
    
     generatorOfFilesWithRandomData.makeRandomFileWithInt32 = async function(par={fileName:"1.rnd",max:10, amountOfRecords:256 }){
         //32bits

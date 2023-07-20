@@ -33,6 +33,7 @@ class MyDb{
             "`city` VARCHAR(32) NULL,"+
             "`faculty` VARCHAR(64) NULL,"+
             "`sgroup` INT NULL,"+
+            " `gr_name` VARCHAR(64) NULL, "+
             " PRIMARY KEY (`st_id`));"
             try {
                 let result = await this.#pool.promise().query(makeTableCommand);
@@ -48,16 +49,16 @@ class MyDb{
         await this._createFaculties2()
         await this._createStudentCity2();
         await this._createGroupsFac2();
-        await this._createGroups2();
+      
         await this._createStudentGroup2();
     }
 
     ///insert 
 
     // insert row info a simple table in 2nd NF
-    async insertRowIntoStudents1 (arg={st_id:1, name:"", surname:"", city:"",faculty:"", group:2}) {
+    async insertRowIntoStudents1 (arg={st_id:1, name:"", surname:"", city:"",faculty:"", group:2, gr_name:"jhg"}) {
 
-        let result = await this.#pool.promise().query(`INSERT INTO students1 (st_id, sname, surname, city, faculty, sgroup) VALUES (?, ?, ?, ?, ?, ?);`,
+        let result = await this.#pool.promise().query(`INSERT INTO students1 (st_id, sname, surname, city, faculty, sgroup, gr_name) VALUES (?, ?, ?, ?, ?, ?, ?);`,
                     [arg.st_id, arg.name, arg.surname, arg.city, arg.faculty, arg.group]);
     }
 
@@ -125,7 +126,8 @@ class MyDb{
         let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`groups_fac2` ("+
     "`gr_id` INT NOT NULL, "+
     " `fac_id` INT NOT NULL, "+
-    " PRIMARY KEY (`gr_id`), "+
+    " `gr_name` VARCHAR (64) NULL, "+
+    " PRIMARY KEY (`gr_id`,`fac_id`), "+
     " INDEX `groups2_fac_id_idx` (`fac_id` ASC), "+
     " CONSTRAINT `groups2_fac_id` "+
         " FOREIGN KEY (`fac_id`)"+
@@ -146,7 +148,7 @@ class MyDb{
         "INDEX `st_gr_fac_id_idx` (`fac_id` ASC), " +
         "CONSTRAINT `st_gr_fac_id` " +
         "FOREIGN KEY (`fac_id`) " +
-        "REFERENCES `mydb`.`groups_fac2` (`fac_id`) " +
+        "REFERENCES `mydb`.`faculties2` (`fac_id`) " +
         "ON DELETE NO ACTION " +
         "ON UPDATE NO ACTION, " +
         "INDEX `student_group2_1gr_id_idx` (`gr_id` ASC), " +
@@ -157,7 +159,7 @@ class MyDb{
         "ON UPDATE NO ACTION, " +
         "CONSTRAINT `student_group2_1gr_id` " +
         "FOREIGN KEY (`gr_id`) " +
-        "REFERENCES `mydb`.`groups2` (`gr_id`) " +
+        "REFERENCES `mydb`.`groups_fac2` (`gr_id`) " +
         "ON DELETE NO ACTION " +
         "ON UPDATE NO ACTION);";
 
@@ -165,19 +167,7 @@ class MyDb{
                     return result;
     }
 
-    async _createGroups2(){
-        let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`groups2` ("+
-            " `gr_id` INT NOT NULL, "+
-            "`gr_name` VARCHAR(64) NULL, "+
-            " PRIMARY KEY (`gr_id`), "+
-            " CONSTRAINT `gr2_gr_id` "+
-             " FOREIGN KEY (`gr_id`) "+
-            "  REFERENCES `mydb`.`groups_fac2` (`gr_id`) "+
-              "ON DELETE NO ACTION ON UPDATE NO ACTION);";
-            let result = await this.#pool.promise().query(makeTableCommand);
-                    return result;
-    }
-
+ 
 
  async insertIntoStudents2(arg={st_id:1, name:"", surname:""}) {
     let result = await this.#pool.promise().query(`INSERT INTO students2 (st_id, name, surname) VALUES (?,?,?)`,
@@ -200,12 +190,7 @@ class MyDb{
         return result;
     }
 
-    async inertIntoGroups2 (arg={gr_id:1, gr_name:"**"}) {
-        let result = await this.#pool.promise().query(`INSERT INTO groups2 (gr_id, gr_name) VALUES (?,?)`,
-                    [arg.gr_id, arg.gr_name]);
-
-        return result;
-    }
+ 
 
     
     async insertIntoFaculties2 (arg={fac_id:1, faculty:2}) {
@@ -215,20 +200,32 @@ class MyDb{
         return result;
     }
 
-     async insertIntoGroupsFac2 (arg={fac_id:1, gr_id:2}) {
-        let result = await this.#pool.promise().query(`INSERT INTO groups_fac2 ( fac_id, gr_id) VALUES (?,?)`,
-                    [arg.fac_id, arg.gr_id]);
+     async insertIntoGroupsFac2 (arg={fac_id:1, gr_id:2, gr_name:"jg"}) {
+        let result = await this.#pool.promise().query(`INSERT INTO groups_fac2 ( fac_id, gr_id, gr_name) VALUES (?,?,?)`,
+                    [arg.fac_id, arg.gr_id, arg.gr_name]);
 
         return result;
     }
 
-       async insertIntoStudentGroup2 (arg={st_id:1, gr_id:2}) {
-        let result = await this.#pool.promise().query(`INSERT INTO student_group2 ( st_id, gr_id) VALUES (?,?)`,
-                    [arg.st_id, arg.gr_id]);
+       async insertIntoStudentGroup2 (arg={st_id:1, gr_id:2, gr_name:"r"}) {
+            let result = await this.#pool.promise().query(`INSERT INTO student_group2 ( st_id, gr_id, gr_name) VALUES (?,?,?)`,
+                    [arg.st_id, arg.gr_id, arg.gr_name]);
 
-        return result;
-    }
+            return result;
+        }
 
+        async fillFacultiesAndGroupsByStdValues (lst={}) {
+            ///get faculties as keys
+            let arrayOfFaculties = Object.keys(lst.faculties);
+            for (let idx=0; idx<arrayOfFaculties.length; idx++) {
+                await this.insertIntoFaculties2({fac_id:idx, faculty:arrayOfFaculties[idx]});
+                    //get groups in according to the faculty
+                    let arrayOfGroups = lst.faculties[arrayOfFaculties[idx]];
+                        for(let gridx=0; gridx<arrayOfGroups.length; gridx++) {
+                            await this.insertIntoGroupsFac2({fac_id: idx, gr_id: gridx, gr_name: arrayOfGroups[gridx] });
+                        }
+            }
+        }
 
 
 }

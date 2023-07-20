@@ -9,7 +9,7 @@ let dbLayer= new dbl.MyDb({database:"mydb",password:"65535258", user:"root", hos
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
+const templates = require("./arrays");
 var app = express();
 
 // view engine setup
@@ -45,8 +45,9 @@ async function test(){
   try{
 
    //await rndGen.makeRandomFileWithInt32(); ok
-   //await dbLayer.initSecondNFTable();  ok
+  await dbLayer.initSecondNFTable();   
     await dbLayer.initThridNFDatabase();  
+    await dbLayer.fillFacultiesAndGroupsByStdValues(templates);
    // await dbLayer.inertIntoGroups2 ({gr_id:501, gr_name:"History of ecology"}); ok
    //await dbLayer.insertRowIntoStudents1({st_id:1, name:"Bob", surname:"Nixon", city:"Detroyt",faculty:"Economy",group:2}); OK
    // await dbLayer.insertIntoStudents2({st_id:1, name:"Vera", surname:"Gray"}); OK
@@ -61,6 +62,8 @@ async function test(){
    await dbLayer.closeConnectionPool(); 
 
 }
+
+
 
 async function fillSecondNFTableFromFiles () {
   //init table
