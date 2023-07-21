@@ -41,7 +41,20 @@ class MyDb{
             } catch (e) {
                 throw new Error(e);
             }
-    } 
+    }
+    
+    async truncSecondNFTable(){
+       return await this.#pool.promise().query('TRUNCATE TABLE `students1`;'); 
+    }
+
+    async truncThridNFDatabase(){
+        await this.#pool.promise().query("TRUNCATE TABLE `faculties2`;");
+        await this.#pool.promise().query("TRUNCATE TABLE `cites2`;");
+        await this.#pool.promise().query("TRUNCATE TABLE `students2`;");
+        await this.#pool.promise().query("TRUNCATE TABLE `student_city2`;");
+        await this.#pool.promise().query("TRUNCATE TABLE `group_fac2`;");
+        await this.#pool.promise().query("TRUNCATE TABLE `student_group`;");
+    }
 
     async initThridNFDatabase(){
         await this._createStudents2();
@@ -59,7 +72,7 @@ class MyDb{
     async insertRowIntoStudents1 (arg={st_id:1, name:"", surname:"", city:"",faculty:"", gr_name:"jhg"}) {
 
         let result = await this.#pool.promise().query(`INSERT INTO students1 (st_id, sname, surname, city, faculty, gr_name) VALUES (?, ?, ?, ?, ?, ?);`,
-                    [arg.st_id, arg.name, arg.surname, arg.city, arg.faculty, arg.group]);
+                    [arg.st_id, arg.name, arg.surname, arg.city, arg.faculty, arg.gr_name]);
     }
 
     // 1)students2
@@ -107,12 +120,12 @@ class MyDb{
     "`city_id` INT NOT NULL,"+
     " PRIMARY KEY (`st_id`),"+
     " INDEX `student_city2_city_id_idx` (`city_id` ASC),"+
-    " CONSTRAINT `student_city2_st_id` "+
+     //" CONSTRAINT `student_city2_st_id` "+
         " FOREIGN KEY (`st_id`) "+
         " REFERENCES `mydb`.`students2` (`st_id`) "+
         " ON DELETE NO ACTION "+
         " ON UPDATE NO ACTION,"+
-    " CONSTRAINT `student_city2_city_id` "+
+    // " CONSTRAINT `student_city2_city_id` "+
     " FOREIGN KEY (`city_id`) "+
     " REFERENCES `mydb`.`cities2` (`city_id`) "+
     "ON DELETE NO ACTION"+
@@ -129,7 +142,7 @@ class MyDb{
     " `gr_name` VARCHAR (64) NULL, "+
     " PRIMARY KEY (`gr_id`,`fac_id`), "+
     " INDEX `groups2_fac_id_idx` (`fac_id` ASC), "+
-    " CONSTRAINT `groups2_fac_id` "+
+    //" CONSTRAINT `groups2_fac_id` "+
         " FOREIGN KEY (`fac_id`)"+
         " REFERENCES `mydb`.`faculties2` (`fac_id`)"+
         " ON DELETE NO ACTION"+
@@ -146,18 +159,18 @@ class MyDb{
         "`fac_id` INT NOT NULL, " +
         "PRIMARY KEY (`st_id`), " +
         "INDEX `st_gr_fac_id_idx` (`fac_id` ASC), " +
-        "CONSTRAINT `st_gr_fac_id` " +
+       // "CONSTRAINT `st_gr_fac_id` " +
         "FOREIGN KEY (`fac_id`) " +
         "REFERENCES `mydb`.`faculties2` (`fac_id`) " +
         "ON DELETE NO ACTION " +
         "ON UPDATE NO ACTION, " +
         "INDEX `student_group2_1gr_id_idx` (`gr_id` ASC), " +
-        "CONSTRAINT `student_group2_st_id` " +
+       // "CONSTRAINT `student_group2_st_id` " +
         "FOREIGN KEY (`st_id`) " +
         "REFERENCES `mydb`.`students2` (`st_id`) " +
         "ON DELETE NO ACTION " +
         "ON UPDATE NO ACTION, " +
-        "CONSTRAINT `student_group2_1gr_id` " +
+      //  "CONSTRAINT `student_group2_1gr_id` " +
         "FOREIGN KEY (`gr_id`) " +
         "REFERENCES `mydb`.`groups_fac2` (`gr_id`) " +
         "ON DELETE NO ACTION " +
@@ -207,14 +220,14 @@ class MyDb{
         return result;
     }
 
-       async insertIntoStudentGroup2 (arg={st_id:1, gr_id:2, gr_name:"r"}) {
-            let result = await this.#pool.promise().query(`INSERT INTO student_group2 ( st_id, gr_id, gr_name) VALUES (?,?,?)`,
-                    [arg.st_id, arg.gr_id, arg.gr_name]);
+       async insertIntoStudentGroup2 (arg={st_id:1, gr_id:2, fac_id:4}) {
+            let result = await this.#pool.promise().query(`INSERT INTO student_group2 ( st_id, gr_id, fac_id) VALUES (?,?,?)`,
+                    [arg.st_id, arg.gr_id, arg.fac_id]);
 
             return result;
         }
           //fills tables 'facukties2' 'groups_fac2' by values from object 'lst' - array.js
-        async fillFacultiesAndGroupsByStdValues (lst={}) {
+        async fillCitiesFacultiesAndGroupsByStdValues (lst={}) {
             ///get faculties as keys
             let arrayOfFaculties = Object.keys(lst.faculties);
             for (let idx=0; idx<arrayOfFaculties.length; idx++) {
@@ -225,10 +238,21 @@ class MyDb{
                             await this.insertIntoGroupsFac2({fac_id: idx, gr_id: gridx, gr_name: arrayOfGroups[gridx] });
                         }
             }
+            //cities
+            for(let idx2 =0; idx2 < lst.cities.length; idx2++) {
+                await this.insertIntoCities2({
+                    city_id:idx2,
+                    city: lst.cities[idx2]
+                })
+            }
         }
+
+
         //fills table 'students1' 2NF by random values.Data gets from arrays thas had been generated later and the inform object (arrays.js)
 
-        async fillSecNFTable (info_template={}, numbOfStudents = 10, fReader) {
+        async fillSecNFTable (info_template={}, numbOfStudents = 10, fReader, chunkSizeBytes) {
+             numbOfStudents = await fReader.readSize("./names.rnd");
+             numbOfStudents = numbOfStudents / 4;
             //read files.Values in this Buffers must be 32bit integer
             let nameBuf, surnameBuf, cityBuf, facultyBuf, grBuf;
             let facultyNames = Object.keys(info_template.faculties);
@@ -237,18 +261,18 @@ class MyDb{
             while (primaryKey < numbOfStudents) {
                 if (mainCurrentPosition >= 0) {
                     //read chunks until EOF
-                    let result = await fReader.readChunkFromFile('names.rnd', 20000 ,mainCurrentPosition );
+                    let result = await fReader.readChunkFromFile('names.rnd', chunkSizeBytes, mainCurrentPosition );
                     nameBuf = result.buffer;
-                    result = await fReader.readChunkFromFile('surnames.rnd', 20000 ,mainCurrentPosition );
+                    result = await fReader.readChunkFromFile('surnames.rnd', chunkSizeBytes, mainCurrentPosition );
                     surnameBuf = result.buffer;
-                    result = await fReader.readChunkFromFile('cities.rnd', 20000 ,mainCurrentPosition );
+                    result = await fReader.readChunkFromFile('cities.rnd', chunkSizeBytes, mainCurrentPosition );
                     cityBuf = result.buffer;
-                    result = await fReader.readChunkFromFile('faculties.rnd', 20000 ,mainCurrentPosition );
+                    result = await fReader.readChunkFromFile('faculties.rnd', chunkSizeBytes, mainCurrentPosition );
                     facultyBuf = result.buffer;
-                    result = await fReader.readChunkFromFile('groups.rnd', 20000 ,mainCurrentPosition );
+                    result = await fReader.readChunkFromFile('groups.rnd', chunkSizeBytes, mainCurrentPosition );
                     grBuf = result.buffer;
-                    if (grBuf.bytesRead) {
-                        mainCurrentPosition += grBuf.bytesRead;
+                    if (result.bytesRead) {
+                        mainCurrentPosition += result.bytesRead;
                     } else {
                         return;
                         mainCurrentPosition = -1;
@@ -256,7 +280,7 @@ class MyDb{
                    
                 }
                 //processing chunks of data.Increment index by 4 - because Int32
-                for (let indexes=0; indexes < nameBuf.length; indexes=indexes + 4){
+                for (let indexes=0; indexes < nameBuf.length-1 && primaryKey < numbOfStudents ; indexes=indexes + 4){
                     let namePtr = nameBuf.readInt32BE(indexes);
                     let surnamePtr = surnameBuf.readInt32BE(indexes);
                     let cityPtr = cityBuf.readInt32BE(indexes);
@@ -267,16 +291,87 @@ class MyDb{
                     let surnameVal = info_template.surnames[namePtr];
                     let cityVal = info_template.cities[cityPtr];
                     let facultyVal = facultyNames[facultyPtr];
-                    let grVal = info_template.faculties[ (facultyNames[facultyPtr]) ][ grPtr ];
+                    let grVal = info_template.faculties[ (facultyNames[facultyPtr]) ][grPtr];
                     //write into DB
                     await this.insertRowIntoStudents1({
                             st_id: primaryKey,
                             name: nameVal,
                             surname: surnameVal,
                             city: cityVal,
-                            faculty: faculty,
+                            faculty: facultyVal,
                             gr_name: grVal,
                         })
+                        //increment student ID
+                    primaryKey++;
+
+                }
+
+
+
+            }
+        }
+////////////////////////////////////////////////////////////
+        async fillThridNFDatabase(info_template={}, numbOfStudents = 10, fReader, chunkSizeBytes){
+            numbOfStudents = await fReader.readSize("./names.rnd");
+             numbOfStudents = numbOfStudents / 4;
+            //read files.Values in this Buffers must be 32bit integer
+            let nameBuf, surnameBuf, cityBuf, facultyBuf, grBuf;
+            let facultyNames = Object.keys(info_template.faculties);
+            let mainCurrentPosition = 0;
+            let primaryKey =0; //PK for table
+            while (primaryKey < numbOfStudents) {
+                if (mainCurrentPosition >= 0) {
+                    //read chunks until EOF
+                    let result = await fReader.readChunkFromFile('names.rnd', chunkSizeBytes, mainCurrentPosition );
+                    nameBuf = result.buffer;
+                    result = await fReader.readChunkFromFile('surnames.rnd', chunkSizeBytes, mainCurrentPosition );
+                    surnameBuf = result.buffer;
+                    result = await fReader.readChunkFromFile('cities.rnd', chunkSizeBytes, mainCurrentPosition );
+                    cityBuf = result.buffer;
+                    result = await fReader.readChunkFromFile('faculties.rnd', chunkSizeBytes, mainCurrentPosition );
+                    facultyBuf = result.buffer;
+                    result = await fReader.readChunkFromFile('groups.rnd', chunkSizeBytes, mainCurrentPosition );
+                    grBuf = result.buffer;
+                    if (result.bytesRead) {
+                        mainCurrentPosition += result.bytesRead;
+                    } else {
+                        return;
+                        mainCurrentPosition = -1;
+                    }
+                   
+                }
+                //processing chunks of data.Increment index by 4 - because Int32
+                for (let indexes=0; indexes < nameBuf.length-1 && primaryKey < numbOfStudents ; indexes=indexes + 4){
+                    let namePtr = nameBuf.readInt32BE(indexes);
+                    let surnamePtr = surnameBuf.readInt32BE(indexes);
+                    let cityPtr = cityBuf.readInt32BE(indexes);
+                    let facultyPtr = facultyBuf.readInt32BE(indexes);
+                    let grPtr = grBuf.readInt32BE(indexes);
+
+                    let nameVal = info_template.names[namePtr];
+                    let surnameVal = info_template.surnames[namePtr];
+                    let cityVal = info_template.cities[cityPtr];
+                    let facultyVal = facultyNames[facultyPtr];
+                    let grVal = info_template.faculties[ (facultyNames[facultyPtr]) ][grPtr];
+                    //write into DB - tables without FK firstly:
+                    //1)students2
+                     await this.insertIntoStudents2({
+                                st_id:primaryKey,
+                                name:nameVal,
+                                surname:surnameVal
+                            })
+                    //2)student_city2
+                    await this.insertIntoStudentCity2({
+                        st_id:primaryKey,
+                        city_id: cityPtr
+                    })
+                    //3)student_group2
+                    await this.insertIntoStudentGroup2({
+                        st_id:primaryKey,
+                        gr_id:grPtr,
+                        fac_id:facultyPtr
+                    });
+
                         //increment student ID
                     primaryKey++;
 

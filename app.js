@@ -7,7 +7,7 @@ let dbl = require("./db");
 let rndGen = require("./randomGenerator");
 let dbLayer= new dbl.MyDb({database:"mydb",password:"65535258", user:"root", host:"localhost"});
 
-var indexRouter = require('./routes/index');
+ 
 var usersRouter = require('./routes/users');
 const templates = require("./arrays");
 var app = express();
@@ -21,9 +21,88 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/', indexRouter);
+ 
 app.use('/users', usersRouter);
+
+
+app.get("/genfiles", async(req, res)=>{
+  let amount;
+  if(!req.query.amount){
+   amount = 10;
+  }else {
+    amount = Number(req.query.amount);
+  }
+  await dbLayer.initSecondNFTable(); 
+  let start = Date.now();
+  await rndGen.makeRandomFileWithInt32({fileName:'cities.rnd',max:12,amountOfRecords:amount});
+  await rndGen.makeRandomFileWithInt32({fileName:'names.rnd',max:20,amountOfRecords:amount});
+  await rndGen.makeRandomFileWithInt32({fileName:'surnames.rnd',max:20,amountOfRecords:amount});
+  await rndGen.makeRandomFileWithInt32({fileName:'faculties.rnd',max:4,amountOfRecords:amount});
+  await rndGen.makeRandomFileWithInt32({fileName:'groups.rnd',max:4,amountOfRecords:amount});
+  let executed = Date.now() - start;
+  res.json({info:"generated!",size:amount, time: executed/1000 });
+})
+
+app.get("/trunc2nf",async (req, res)=>{
+  try{
+     await dbLayer.truncSecondNFTable();
+    }catch(e){
+      if (e.errno == 1146) {
+        res.json({msg:"Tables arn`t exists"})
+      } else{
+        res.end(e.message);
+      }
+      return;
+    }
+   
+    res.json({status:"truncated!"});
+})
+
+
+app.get("/trunc3nf",async (Req,res)=>{
+  try{
+    await dbLayer.truncThridNFDatabase();
+  }catch(e){
+    if(e.errno == 1146){
+      res.json({msg:"Tables arn`t exists"})
+    } else{
+      res.end(e.message);
+    }
+    return;
+  }
+   res.json({status:"truncated!"});
+})
+
+
+app.get("/fill2table", async (req, res)=>{
+  let start;
+  try{
+    await dbLayer.initSecondNFTable();
+    start = Date.now()  
+    await dbLayer.fillSecNFTable(templates,10,rndGen,4096);
+    start = Date.now() - start;
+  }catch(e){
+    res.end(e.message);
+    return;
+  }  
+  res.json({status:"Success!", executed:start/1000});
+
+});
+
+app.get("/fill3database", async (req, res)=>{
+  let start;
+  try{
+    await dbLayer.initThridNFDatabase()
+    await dbLayer.fillCitiesFacultiesAndGroupsByStdValues(templates);
+    start = Date.now()  
+    await dbLayer.fillThridNFDatabase(templates,10,rndGen,4096);
+    start = Date.now() - start;
+  }catch(e){
+    res.end(e.message);
+    return;
+  }  
+  res.json({status:"Success! Database has been filled", executed:start/1000});
+})
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -41,18 +120,21 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+
+
+
 async function test(){
   try{
 
    //await rndGen.makeRandomFileWithInt32(); ok
-  /*await dbLayer.initSecondNFTable();   
-  await rndGen.makeRandomFileWithInt32({fileName:'cities.rnd',max:12,amountOfRecords:10});
-  await rndGen.makeRandomFileWithInt32({fileName:'names.rnd',max:20,amountOfRecords:10});
-  await rndGen.makeRandomFileWithInt32({fileName:'surnames.rnd',max:20,amountOfRecords:10});
-  await rndGen.makeRandomFileWithInt32({fileName:'faculties.rnd',max:4,amountOfRecords:10});
-  await rndGen.makeRandomFileWithInt32({fileName:'groups.rnd',max:70,amountOfRecords:10});*/
+  await dbLayer.initSecondNFTable();   
+  await rndGen.makeRandomFileWithInt32({fileName:'cities.rnd',max:12,amountOfRecords:20});
+  await rndGen.makeRandomFileWithInt32({fileName:'names.rnd',max:20,amountOfRecords:20});
+  await rndGen.makeRandomFileWithInt32({fileName:'surnames.rnd',max:20,amountOfRecords:20});
+  await rndGen.makeRandomFileWithInt32({fileName:'faculties.rnd',max:4,amountOfRecords:20});
+  await rndGen.makeRandomFileWithInt32({fileName:'groups.rnd',max:4,amountOfRecords:20});
 
-  await dbLayer.fillSecNFTable(templates,10,rndGen);
+  await dbLayer.fillSecNFTable(templates,20,rndGen,12);
 
    // await dbLayer.initThridNFDatabase();  
    // await dbLayer.fillFacultiesAndGroupsByStdValues(templates);
@@ -72,15 +154,8 @@ async function test(){
 }
 
 
-
-async function fillSecondNFTableFromFiles () {
-  //init table
-  await dbLayer.initSecondNFTable();
-  
-}
+ 
 
 
-
-test();
-
-//app.listen(3000, ()=>console.log("listen on 3000..."))
+ 
+app.listen(3000,()=>console.log("listen on port 3000"))

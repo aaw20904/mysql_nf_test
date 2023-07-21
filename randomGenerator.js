@@ -9,6 +9,11 @@ let  generatorOfFilesWithRandomData = {};
         return outBuffer;
     }
 
+    generatorOfFilesWithRandomData.readSize = async (fname)=>{
+        let statistics = await fsPromises.stat(fname);
+        return statistics.size;
+    }
+
     generatorOfFilesWithRandomData.readChunkFromFile = async function (filename, size, currentPos) {
         
         let fd = fs.openSync(filename,'r');//await fsPromises.open(filename,'r');
