@@ -11,13 +11,24 @@ let  generatorOfFilesWithRandomData = {};
 
     generatorOfFilesWithRandomData.readChunkFromFile = async function (filename, size, currentPos) {
         
-        let fd = fsPromises.open(filename,'r');
+        let fd = fs.openSync(filename,'r');//await fsPromises.open(filename,'r');
         let buffer = Buffer.allocUnsafe(size);
-        const res = await fsPromises.read(buffer, 0, size, currentPos);
+         
+        
+      const res =     await new Promise((resolve, reject) => {
+                            fs.read(fd, buffer, 0, size, currentPos, (err, bytesRead, buffer)=>{
+                                if (err) {
+                                    reject(err)
+                                } else {
+                                 resolve({bytesRead})
+                                }
+                            });
+                        });
+            
         if( ! res.bytesRead) {
             return {buffer:null, bytesRead:res.bytesRead}
         } else{
-            return {buffer, bytesRead}
+            return {buffer, bytesRead: res.bytesRead}
         }
     }
 

@@ -232,7 +232,6 @@ class MyDb{
             //read files.Values in this Buffers must be 32bit integer
             let nameBuf, surnameBuf, cityBuf, facultyBuf, grBuf;
             let facultyNames = Object.keys(info_template.faculties);
-            nameIdx = 1;
             let mainCurrentPosition = 0;
             let primaryKey =0; //PK for table
             while (primaryKey < numbOfStudents) {
@@ -246,7 +245,7 @@ class MyDb{
                     cityBuf = result.buffer;
                     result = await fReader.readChunkFromFile('faculties.rnd', 20000 ,mainCurrentPosition );
                     facultyBuf = result.buffer;
-                    result = await fReader.readChunkFromFile('surnames.rnd', 20000 ,mainCurrentPosition );
+                    result = await fReader.readChunkFromFile('groups.rnd', 20000 ,mainCurrentPosition );
                     grBuf = result.buffer;
                     if (grBuf.bytesRead) {
                         mainCurrentPosition += grBuf.bytesRead;

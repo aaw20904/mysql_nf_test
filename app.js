@@ -45,9 +45,17 @@ async function test(){
   try{
 
    //await rndGen.makeRandomFileWithInt32(); ok
-  await dbLayer.initSecondNFTable();   
-    await dbLayer.initThridNFDatabase();  
-    await dbLayer.fillFacultiesAndGroupsByStdValues(templates);
+  /*await dbLayer.initSecondNFTable();   
+  await rndGen.makeRandomFileWithInt32({fileName:'cities.rnd',max:12,amountOfRecords:10});
+  await rndGen.makeRandomFileWithInt32({fileName:'names.rnd',max:20,amountOfRecords:10});
+  await rndGen.makeRandomFileWithInt32({fileName:'surnames.rnd',max:20,amountOfRecords:10});
+  await rndGen.makeRandomFileWithInt32({fileName:'faculties.rnd',max:4,amountOfRecords:10});
+  await rndGen.makeRandomFileWithInt32({fileName:'groups.rnd',max:70,amountOfRecords:10});*/
+
+  await dbLayer.fillSecNFTable(templates,10,rndGen);
+
+   // await dbLayer.initThridNFDatabase();  
+   // await dbLayer.fillFacultiesAndGroupsByStdValues(templates);
    // await dbLayer.inertIntoGroups2 ({gr_id:501, gr_name:"History of ecology"}); ok
    //await dbLayer.insertRowIntoStudents1({st_id:1, name:"Bob", surname:"Nixon", city:"Detroyt",faculty:"Economy",group:2}); OK
    // await dbLayer.insertIntoStudents2({st_id:1, name:"Vera", surname:"Gray"}); OK
