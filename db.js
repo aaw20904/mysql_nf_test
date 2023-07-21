@@ -238,15 +238,15 @@ class MyDb{
             while (primaryKey < numbOfStudents) {
                 if (mainCurrentPosition >= 0) {
                     //read chunks until EOF
-                    let result = await fReader.readChunkFromFile('names.rnd',20000 ,mainCurrentPosition );
+                    let result = await fReader.readChunkFromFile('names.rnd', 20000 ,mainCurrentPosition );
                     nameBuf = result.buffer;
-                    result = await fReader.readChunkFromFile('surnames.rnd',20000 ,mainCurrentPosition );
+                    result = await fReader.readChunkFromFile('surnames.rnd', 20000 ,mainCurrentPosition );
                     surnameBuf = result.buffer;
-                    result = await fReader.readChunkFromFile('cities.rnd',20000 ,mainCurrentPosition );
+                    result = await fReader.readChunkFromFile('cities.rnd', 20000 ,mainCurrentPosition );
                     cityBuf = result.buffer;
-                    result = await fReader.readChunkFromFile('faculties.rnd',20000 ,mainCurrentPosition );
+                    result = await fReader.readChunkFromFile('faculties.rnd', 20000 ,mainCurrentPosition );
                     facultyBuf = result.buffer;
-                    result = await fReader.readChunkFromFile('surnames.rnd',20000 ,mainCurrentPosition );
+                    result = await fReader.readChunkFromFile('surnames.rnd', 20000 ,mainCurrentPosition );
                     grBuf = result.buffer;
                     if (grBuf.bytesRead) {
                         mainCurrentPosition += grBuf.bytesRead;
