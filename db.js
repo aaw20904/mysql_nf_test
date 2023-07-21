@@ -1,4 +1,5 @@
 const mysql = require("mysql2");
+const fsPromises= require("fs").promises;
 class MyDb{
  #pool;
  
@@ -32,7 +33,6 @@ class MyDb{
             " `surname` VARCHAR(32) NULL,"+
             "`city` VARCHAR(32) NULL,"+
             "`faculty` VARCHAR(64) NULL,"+
-            "`sgroup` INT NULL,"+
             " `gr_name` VARCHAR(64) NULL, "+
             " PRIMARY KEY (`st_id`));"
             try {
@@ -56,9 +56,9 @@ class MyDb{
     ///insert 
 
     // insert row info a simple table in 2nd NF
-    async insertRowIntoStudents1 (arg={st_id:1, name:"", surname:"", city:"",faculty:"", group:2, gr_name:"jhg"}) {
+    async insertRowIntoStudents1 (arg={st_id:1, name:"", surname:"", city:"",faculty:"", gr_name:"jhg"}) {
 
-        let result = await this.#pool.promise().query(`INSERT INTO students1 (st_id, sname, surname, city, faculty, sgroup, gr_name) VALUES (?, ?, ?, ?, ?, ?, ?);`,
+        let result = await this.#pool.promise().query(`INSERT INTO students1 (st_id, sname, surname, city, faculty, gr_name) VALUES (?, ?, ?, ?, ?, ?);`,
                     [arg.st_id, arg.name, arg.surname, arg.city, arg.faculty, arg.group]);
     }
 
@@ -118,8 +118,8 @@ class MyDb{
     "ON DELETE NO ACTION"+
     " ON UPDATE NO ACTION);"
     
-                    let result = await this.#pool.promise().query(makeTableCommand);
-                    return result;
+            let result = await this.#pool.promise().query(makeTableCommand);
+            return result;
     }
 
     async _createGroupsFac2() {
@@ -213,7 +213,7 @@ class MyDb{
 
             return result;
         }
-
+          //fills tables 'facukties2' 'groups_fac2' by values from object 'lst' - array.js
         async fillFacultiesAndGroupsByStdValues (lst={}) {
             ///get faculties as keys
             let arrayOfFaculties = Object.keys(lst.faculties);
@@ -224,6 +224,67 @@ class MyDb{
                         for(let gridx=0; gridx<arrayOfGroups.length; gridx++) {
                             await this.insertIntoGroupsFac2({fac_id: idx, gr_id: gridx, gr_name: arrayOfGroups[gridx] });
                         }
+            }
+        }
+        //fills table 'students1' 2NF by random values.Data gets from arrays thas had been generated later and the inform object (arrays.js)
+
+        async fillSecNFTable (info_template={}, numbOfStudents = 10, fReader) {
+            //read files.Values in this Buffers must be 32bit integer
+            let nameBuf, surnameBuf, cityBuf, facultyBuf, grBuf;
+            let facultyNames = Object.keys(info_template.faculties);
+            nameIdx = 1;
+            let mainCurrentPosition = 0;
+            let primaryKey =0; //PK for table
+            while (primaryKey < numbOfStudents) {
+                if (mainCurrentPosition >= 0) {
+                    //read chunks until EOF
+                    let result = await fReader.readChunkFromFile('names.rnd',20000 ,mainCurrentPosition );
+                    nameBuf = result.buffer;
+                    result = await fReader.readChunkFromFile('surnames.rnd',20000 ,mainCurrentPosition );
+                    surnameBuf = result.buffer;
+                    result = await fReader.readChunkFromFile('cities.rnd',20000 ,mainCurrentPosition );
+                    cityBuf = result.buffer;
+                    result = await fReader.readChunkFromFile('faculties.rnd',20000 ,mainCurrentPosition );
+                    facultyBuf = result.buffer;
+                    result = await fReader.readChunkFromFile('surnames.rnd',20000 ,mainCurrentPosition );
+                    grBuf = result.buffer;
+                    if (grBuf.bytesRead) {
+                        mainCurrentPosition += grBuf.bytesRead;
+                    } else {
+                        return;
+                        mainCurrentPosition = -1;
+                    }
+                   
+                }
+                //processing chunks of data.Increment index by 4 - because Int32
+                for (let indexes=0; indexes < nameBuf.length; indexes=indexes + 4){
+                    let namePtr = nameBuf.readInt32BE(indexes);
+                    let surnamePtr = surnameBuf.readInt32BE(indexes);
+                    let cityPtr = cityBuf.readInt32BE(indexes);
+                    let facultyPtr = facultyBuf.readInt32BE(indexes);
+                    let grPtr = grBuf.readInt32BE(indexes);
+
+                    let nameVal = info_template.names[namePtr];
+                    let surnameVal = info_template.surnames[namePtr];
+                    let cityVal = info_template.cities[cityPtr];
+                    let facultyVal = facultyNames[facultyPtr];
+                    let grVal = info_template.faculties[ (facultyNames[facultyPtr]) ][ grPtr ];
+                    //write into DB
+                    await this.insertRowIntoStudents1({
+                            st_id: primaryKey,
+                            name: nameVal,
+                            surname: surnameVal,
+                            city: cityVal,
+                            faculty: faculty,
+                            gr_name: grVal,
+                        })
+                        //increment student ID
+                    primaryKey++;
+
+                }
+
+
+
             }
         }
 

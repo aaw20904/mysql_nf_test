@@ -9,6 +9,18 @@ let  generatorOfFilesWithRandomData = {};
         return outBuffer;
     }
 
+    generatorOfFilesWithRandomData.readChunkFromFile = async function (filename, size, currentPos) {
+        
+        let fd = fsPromises.open(filename,'r');
+        let buffer = Buffer.allocUnsafe(size);
+        const res = await fsPromises.read(buffer, 0, size, currentPos);
+        if( ! res.bytesRead) {
+            return {buffer:null, bytesRead:res.bytesRead}
+        } else{
+            return {buffer, bytesRead}
+        }
+    }
+
    
    
     generatorOfFilesWithRandomData.makeRandomFileWithInt32 = async function(par={fileName:"1.rnd",max:10, amountOfRecords:256 }){
