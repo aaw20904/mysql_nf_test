@@ -85,7 +85,7 @@ await this.#pool.promise().query("DROP TABLE `students2`;");
     async _createStudents2(){
         let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`students2` ("+
             "`st_id` INT NOT NULL,"+
-            "`name` VARCHAR(32) NULL,"+
+            "`sname` VARCHAR(32) NULL,"+
             "`surname` VARCHAR(32) NULL,"+
             "PRIMARY KEY (`st_id`));"
             
@@ -188,9 +188,9 @@ await this.#pool.promise().query("DROP TABLE `students2`;");
 
  
 
- async insertIntoStudents2(arg={st_id:1, name:"", surname:""}) {
-    let result = await this.#pool.promise().query(`INSERT INTO students2 (st_id, name, surname) VALUES (?,?,?)`,
-                    [arg.st_id, arg.name, arg.surname]);
+ async insertIntoStudents2(arg={st_id:1, sname:"", surname:""}) {
+    let result = await this.#pool.promise().query(`INSERT INTO students2 (st_id, sname, surname) VALUES (?,?,?)`,
+                    [arg.st_id, arg.sname, arg.surname]);
 
     return result;
  }
@@ -363,7 +363,7 @@ await this.#pool.promise().query("DROP TABLE `students2`;");
                     //1)students2
                      await this.insertIntoStudents2({
                                 st_id:primaryKey,
-                                name:nameVal,
+                                sname:nameVal,
                                 surname:surnameVal
                             })
                     //2)student_city2
