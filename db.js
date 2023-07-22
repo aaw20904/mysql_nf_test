@@ -34,6 +34,9 @@ class MyDb{
             "`city` VARCHAR(32) NULL,"+
             "`faculty` VARCHAR(64) NULL,"+
             " `gr_name` VARCHAR(64) NULL, "+
+            "INDEX students1_city (city),"+
+            "INDEX students1_faculty (faculty),"+
+            "INDEX students1_gr_name (gr_name),"+
             " PRIMARY KEY (`st_id`));"
             try {
                 let result = await this.#pool.promise().query(makeTableCommand);
@@ -98,6 +101,7 @@ await this.#pool.promise().query("DROP TABLE `students2`;");
         let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`cities2` ("+
         "`city_id` INT NOT NULL,"+
         "`city` VARCHAR(32) NULL,"+
+        " INDEX cities2_city (city), "+
         "PRIMARY KEY (`city_id`));"
 
        
@@ -112,6 +116,7 @@ await this.#pool.promise().query("DROP TABLE `students2`;");
     let makeTableCommand = "CREATE TABLE IF NOT EXISTS `mydb`.`faculties2` ("+
         "`fac_id` INT NOT NULL,"+
         "`faculty` VARCHAR(64) NULL,"+
+        "INDEX faculties2_faculty (faculty),"+
         "PRIMARY KEY (`fac_id`));"
           
                 let result = await this.#pool.promise().query(makeTableCommand);
@@ -146,6 +151,7 @@ await this.#pool.promise().query("DROP TABLE `students2`;");
     "`gr_id` INT NOT NULL, "+
     " `fac_id` INT NOT NULL, "+
     " `gr_name` VARCHAR (64) NULL, "+
+    " INDEX groups_fac2 (gr_name), "+
     " PRIMARY KEY (`gr_id`,`fac_id`), "+
     " INDEX `groups2_fac_id_idx` (`fac_id` ASC), "+
     //" CONSTRAINT `groups2_fac_id` "+
