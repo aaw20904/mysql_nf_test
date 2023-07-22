@@ -24,6 +24,9 @@ app.use(express.static(path.join(__dirname, 'public')));
  
 app.use('/users', usersRouter);
 
+app.get("/index",(req, res)=>{
+  res.render("start.ejs",{date:new Date().toString()})
+})
 
 app.get("/genfiles", async(req, res)=>{
   let amount;
@@ -70,7 +73,7 @@ app.get("/trunc3nf",async (Req,res)=>{
     }
     return;
   }
-   res.json({status:"truncated!"});
+   res.json({status:"droped!"});
 })
 
 

@@ -47,13 +47,19 @@ class MyDb{
        return await this.#pool.promise().query('TRUNCATE TABLE `students1`;'); 
     }
 
-    async truncThridNFDatabase(){
-        await this.#pool.promise().query("TRUNCATE TABLE `faculties2`;");
-        await this.#pool.promise().query("TRUNCATE TABLE `cites2`;");
-        await this.#pool.promise().query("TRUNCATE TABLE `students2`;");
-        await this.#pool.promise().query("TRUNCATE TABLE `student_city2`;");
-        await this.#pool.promise().query("TRUNCATE TABLE `group_fac2`;");
-        await this.#pool.promise().query("TRUNCATE TABLE `student_group`;");
+    async truncThridNFDatabase(){ 
+        await this.#pool.promise().query("DROP TABLE `student_city2`;");
+await this.#pool.promise().query("DROP TABLE `student_group2`;");
+await this.#pool.promise().query("DROP TABLE `cities2`;");
+await this.#pool.promise().query("DROP TABLE `groups_fac2`;");
+await this.#pool.promise().query("DROP TABLE `faculties2`;");
+await this.#pool.promise().query("DROP TABLE `students2`;");
+      
+        
+    
+       
+        
+        
     }
 
     async initThridNFDatabase(){
@@ -123,13 +129,13 @@ class MyDb{
      //" CONSTRAINT `student_city2_st_id` "+
         " FOREIGN KEY (`st_id`) "+
         " REFERENCES `mydb`.`students2` (`st_id`) "+
-        " ON DELETE NO ACTION "+
-        " ON UPDATE NO ACTION,"+
+        " ON DELETE  CASCADE "+
+        " ON UPDATE  CASCADE,"+
     // " CONSTRAINT `student_city2_city_id` "+
     " FOREIGN KEY (`city_id`) "+
     " REFERENCES `mydb`.`cities2` (`city_id`) "+
-    "ON DELETE NO ACTION"+
-    " ON UPDATE NO ACTION);"
+    "ON DELETE CASCADE"+
+    " ON UPDATE CASCADE);"
     
             let result = await this.#pool.promise().query(makeTableCommand);
             return result;
@@ -145,8 +151,8 @@ class MyDb{
     //" CONSTRAINT `groups2_fac_id` "+
         " FOREIGN KEY (`fac_id`)"+
         " REFERENCES `mydb`.`faculties2` (`fac_id`)"+
-        " ON DELETE NO ACTION"+
-        " ON UPDATE NO ACTION);"
+        " ON DELETE CASCADE"+
+        " ON UPDATE  CASCADE);"
 
         let result = await this.#pool.promise().query(makeTableCommand);
                     return result;
@@ -162,19 +168,19 @@ class MyDb{
        // "CONSTRAINT `st_gr_fac_id` " +
         "FOREIGN KEY (`fac_id`) " +
         "REFERENCES `mydb`.`faculties2` (`fac_id`) " +
-        "ON DELETE NO ACTION " +
-        "ON UPDATE NO ACTION, " +
+        "ON DELETE CASCADE " +
+        "ON UPDATE  CASCADE, " +
         "INDEX `student_group2_1gr_id_idx` (`gr_id` ASC), " +
        // "CONSTRAINT `student_group2_st_id` " +
         "FOREIGN KEY (`st_id`) " +
         "REFERENCES `mydb`.`students2` (`st_id`) " +
-        "ON DELETE NO ACTION " +
-        "ON UPDATE NO ACTION, " +
+        "ON DELETE  CASCADE " +
+        "ON UPDATE  CASCADE, " +
       //  "CONSTRAINT `student_group2_1gr_id` " +
         "FOREIGN KEY (`gr_id`) " +
         "REFERENCES `mydb`.`groups_fac2` (`gr_id`) " +
-        "ON DELETE NO ACTION " +
-        "ON UPDATE NO ACTION);";
+        "ON DELETE  CASCADE " +
+        "ON UPDATE  CASCADE);";
 
         let result = await this.#pool.promise().query(makeTableCommand);
                     return result;

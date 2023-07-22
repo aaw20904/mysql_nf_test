@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        a{
+            background-color:#99dd00;
+            color:darkgreen;
+            border-radius: 1em;
+            padding: 0.3em;
+        }
+        div{
+            margin-top:1.5em;
+        }
+        a:hover{
+            color: burlywood;
+            background-color: darkgreen;
+        }
+        body{
+            background-color:darkseagreen;
+            color:darkolivegreen;
+        }
+    </style>
+</head>
+<body>
+    <h1>Random data generator for MySQL</h1>
+    <h2>Please select what to do:</h2>
+    <div><a href="http://localhost:3000/genfiles?amount=1000">generate binary files with random data (1000 rows)</a></div>
+    <div><a href="http://localhost:3000/genfiles?amount=50000">generate binary files with random data (50000 rows)</a></div>
+    <div><a href="http://localhost:3000/fill2table">Fill a table in 2NF by random data (!data from files)</a></div>
+    <div><a href="http://localhost:3000/fill3database">Fill s database (tables) in 3NF by random data (!data from files)</a></div>
+    <div><a href="http://localhost:3000/trunc2nf">truncate (clear) a table in 2NF</a></div>
+    <div><a href="http://localhost:3000/trunc3nf">drop (remove) a DB in 3NF</a></div>
+
+<p>IMPORTANT:To generate table in 2NF or database (tables) in 3NF you must firstly generate binary files.These files will be used for filling SQL table(s)</p>
+<p><%=date %></p>
+</body>
+</html>
